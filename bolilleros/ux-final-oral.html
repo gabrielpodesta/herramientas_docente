@@ -1,0 +1,1419 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Final Oral - Diseño de Experiencia de Usuario</title>
+  <style>
+:root {
+  --bg: #f5f6fa;
+  --surface: #ffffff;
+  --surface-soft: #eef1f7;
+  --ink: #1f2937;
+  --muted: #6b7280;
+  --blue: #3e52f5;
+  --violet: #8b1cff;
+  --violet-dark: #4c0daa;
+  --violet-soft: #ede4ff;
+  --line: #d9deea;
+  --shadow: 0 18px 45px rgba(48, 25, 100, .16);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 82% 6%, rgba(139, 28, 255, .16), transparent 24%),
+    radial-gradient(circle at 6% 94%, rgba(62, 82, 245, .12), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, var(--bg) 44%, #eef1f7 100%);
+}
+
+.top {
+  padding: 34px 42px 18px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(36px, 5vw, 70px);
+  line-height: .92;
+  letter-spacing: -2.5px;
+  color: var(--blue);
+}
+
+.subtitle {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+button {
+  border: 0;
+  border-radius: 18px;
+  padding: 13px 18px;
+  font-size: 15px;
+  font-weight: 850;
+  cursor: pointer;
+  color: #ffffff;
+  background: linear-gradient(180deg, #9d35ff, var(--violet));
+  box-shadow: 0 12px 25px rgba(139, 28, 255, .22);
+  transition: .14s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+}
+
+button.secondary {
+  background: #ffffff;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 24px rgba(31, 41, 55, .08);
+}
+
+button.danger {
+  background: linear-gradient(180deg, #5f18c9, var(--violet-dark));
+  color: #ffffff;
+  box-shadow: 0 12px 26px rgba(76, 13, 170, .24);
+}
+
+main {
+  padding: 0 42px 52px;
+}
+
+.status {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 16px 0 22px;
+}
+
+.pill {
+  background: rgba(255, 255, 255, .82);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 16px;
+  color: var(--muted);
+  font-weight: 850;
+  box-shadow: 0 8px 20px rgba(31, 41, 55, .06);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+  gap: 16px;
+  max-width: 1900px;
+}
+
+.tile {
+  aspect-ratio: 1.25 / 1;
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  color: #4b5563;
+  border: 1px solid rgba(217, 222, 234, .9);
+  box-shadow: 0 14px 34px rgba(31, 41, 55, .08);
+  font-size: 28px;
+  font-weight: 950;
+  cursor: pointer;
+  transition: .16s ease;
+}
+
+.tile:hover {
+  transform: translateY(-3px);
+  background: var(--violet-soft);
+  color: var(--violet-dark);
+  box-shadow: 0 18px 40px rgba(139, 28, 255, .16);
+}
+
+.tile.used {
+  background: linear-gradient(180deg, #9e2cff, var(--violet));
+  color: #ffffff;
+  text-decoration: line-through;
+  border-color: transparent;
+  box-shadow: 0 18px 42px rgba(139, 28, 255, .28);
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(245, 246, 250, .72);
+  backdrop-filter: blur(10px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 10;
+}
+
+.modal.open { display: flex; }
+
+.card {
+  width: min(980px, 96vw);
+  background: #ffffff;
+  border: 1px solid rgba(217, 222, 234, .95);
+  border-radius: 34px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: start;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.num {
+  font-size: 18px;
+  color: var(--violet);
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+}
+
+.cat {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.close {
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: 0 8px 20px rgba(31, 41, 55, .08);
+  border: 1px solid var(--line);
+}
+
+.question {
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.08;
+  font-weight: 950;
+  margin: 14px 0 20px;
+  color: var(--ink);
+}
+
+.answer {
+  display: none;
+  background: linear-gradient(180deg, #f7f3ff, #ffffff);
+  border-left: 7px solid var(--violet);
+  padding: 18px;
+  border-radius: 18px;
+  color: #374151;
+  font-size: 22px;
+  line-height: 1.45;
+}
+
+.answer.show { display: block; }
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.footerLogo {
+  position: fixed;
+  right: 26px;
+  bottom: 18px;
+  z-index: 2;
+  width: 105px;
+  opacity: .65;
+  pointer-events: none;
+}
+
+.footerLogo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: invert(19%) sepia(92%) saturate(3560%) hue-rotate(235deg) brightness(98%) contrast(94%);
+}
+
+@media (max-width: 700px) {
+  .top, main { padding-left: 18px; padding-right: 18px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 10px; }
+  .tile { font-size: 21px; border-radius: 18px; }
+  .footerLogo { width: 82px; right: 14px; bottom: 12px; }
+}
+
+</style>
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Final Oral<br>Diseño de Experiencia de Usuario</h1>
+      <p class="subtitle">Tablero aleatorio con preguntas independientes. Al tocar un número, queda tachado.</p>
+    </div>
+    <div class="controls">
+      <button id="newRound">Nueva tanda</button>
+      <button class="secondary" id="clearUsed">Limpiar tachados</button>
+      <button class="danger" id="resetAll">Reiniciar y mezclar</button>
+    </div>
+  </header>
+  <main>
+    <div class="status">
+      <span class="pill" id="counter">0 usadas</span>
+      <span class="pill" id="total"></span>
+      <span class="pill">Tip: “Nueva tanda” mezcla preguntas y limpia el tablero. “Limpiar tachados” mantiene el orden.</span>
+    </div>
+    <section class="grid" id="grid"></section>
+  </main>
+  <div class="modal" id="modal">
+    <article class="card">
+      <div class="cardTop">
+        <div>
+          <div class="num" id="modalNum"></div>
+          <div class="cat" id="category"></div>
+        </div>
+        <button class="close" id="close">Cerrar</button>
+      </div>
+      <div class="question" id="question"></div>
+      <div class="answer" id="answer"></div>
+      <div class="actions">
+        <button id="showAnswer">Mostrar respuesta esperada</button>
+        <button class="secondary" id="markClose">Cerrar</button>
+      </div>
+    </article>
+  </div>
+  <div class="footerLogo"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDMwLjIuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDkuMDMgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkNhcGFfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgdmlld0JveD0iMCAwIDYwMCAyMTAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDYwMCAyMTA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojRkZGRkZGO30KPC9zdHlsZT4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE0OS43LDE0My40VjEwLjdoLTIyLjhsMCwxMzIuOGMwLDAsMCw0LjMtMC4zLDljLTAuNSw3LjItMS41LDE2LjctNy40LDIzLjdjLTQuNSw1LjQtMTEuNSw3LjctMTYuNyw4LjYKCWMtNC45LDAuOS0xNC41LDAuNS0xOC4yLTAuMmMtNS4zLTEtMTEuOS0zLjMtMTYuNi05Yy01LjktNy03LjMtMTcuMi03LjYtMjQuMmMtMC4yLTQuNy0wLjEtOC4xLTAuMS04LjFoMFYxMC43aC0wLjdMMTAsMTAuOHYzLjMKCWMxOS4yLDEuNiwxNi40LDkuNywxNi42LDI0Ljh2MTA0LjNjMCwwLDAuMSw0LjEsMC43LDkuN2MxLjksMTUuMyw5LjMsNDUuOSw2NS43LDQ2LjFjMTguNi0wLjQsMzMuNy00LjIsNDIuMS0xMi44CglDMTQ5LjksMTczLjYsMTQ5LjcsMTQzLjQsMTQ5LjcsMTQzLjQgTTIwOS4zLDEwMi4zbDE4LjYtNTEuNGwxOS4zLDUxLjRIMjA5LjN6IE0yNDEuNywxMC43bC0zOC43LDBWMTRjMTMuMywxLjEsMTUuOCw3LDE0LjQsMTQuNQoJYy0wLjMsMi4xLTIuMyw4LjEtNC42LDE0Yy0yLjgsNy42LTU4LjUsMTU2LjctNTguNSwxNTYuN2gyMS40bDMwLjUtODMuNmg0NS40bDMwLDgzLjZIMzEzTDI0MS43LDEwLjd6IE01NDUuNywxODMuMQoJYy0yMC4xLDAtMjIuNS04LTIyLjUtMjMuNGwtMC41LTU3LjVoNTEuMXYtMC43aDAuMVY5MS4xYzAsMCwwLDAtMC4xLDB2LTQuMmgtNTFsLTAuMSwwbDAtNDQuOGMwLTE0LjMsMS40LTE3LjMsMTctMTcuM2g1MC4yCglsMC4xLTE0LjFINDcyLjNWMTRjMTkuMiwxLjUsMTYuNCw5LjcsMTYuNywyNC45djE2MC4zaDEwMXYtMTYuMUw1NDUuNywxODMuMXogTTQzMC44LDExOS41Yy0wLjUsNC43LTEuMiw5LjktMi4zLDE1CgljLTEuMyw2LTQuOSwxNi45LTcuNSwyMmMtMy45LDcuNS04LDE1LjUtMTcuNiwyMS4xYy05LjksNS44LTE3LjMsOC4zLTMwLjYsOC4zYy00LjEsMC03LjctMC43LTEwLjEtMS41VjI1LjIKCWMyLjQtMC44LDUuNy0xLjEsOS44LTEuMWM1MC41LDAsNTguMywzNy4zLDU5LjEsNzcuNkM0MzEuNywxMDQuOSw0MzEuNiwxMTEuNiw0MzAuOCwxMTkuNSBNNDY1LjIsMTAxLjdjMC03Ny43LTQ1LjYtOTAuNi0xMDMuOC05MQoJbC00OS41LDB2My4zYzE5LjIsMS42LDE2LjQsOS43LDE2LjYsMjQuOHYxMDUuNWgwLjJ2NTQuOWwzMi42LDBjNDcuNi0wLjMsODYuMS05LjEsOTguOC01NC45aDAKCUM0NjMuNiwxMzIuOCw0NjUuMiwxMTguNyw0NjUuMiwxMDEuNyIvPgo8L3N2Zz4K" alt="UADE"></div>
+  <script>
+const QUESTIONS = [
+  {
+    "q": "¿Qué es la Experiencia de Usuario (UX)?",
+    "a": "Es el conjunto de percepciones, sensaciones y respuestas que una persona tiene antes, durante y después de interactuar con un producto, sistema o servicio.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Cuál es la diferencia entre UX y UI?",
+    "a": "UI es la interfaz visible: pantallas, botones, colores, tipografías y componentes. UX es más amplio: incluye la experiencia completa del usuario.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Cuál es la diferencia entre UX y usabilidad?",
+    "a": "La usabilidad mide facilidad, eficiencia y satisfacción de uso. UX incluye también emociones, expectativas, contexto y percepción general.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Qué significa Diseño Centrado en el Usuario (DCU)?",
+    "a": "Es un enfoque que coloca al usuario en el centro del proceso de diseño, validando decisiones con investigación y pruebas.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Por qué no conviene diseñar únicamente por intuición?",
+    "a": "Porque la intuición puede estar sesgada. En UX hay que validar hipótesis con usuarios reales, investigación y pruebas.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Qué hace un diseñador UX?",
+    "a": "Investiga usuarios, analiza necesidades, organiza información, diseña recorridos, crea wireframes/prototipos, testea y mejora la experiencia.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Qué rol puede tener un diseñador UX en una empresa chica?",
+    "a": "Suele tener un rol integral: investiga, diseña, prototipa, testea, organiza contenidos y coordina con otras áreas.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Qué es la carga cognitiva?",
+    "a": "Es el esfuerzo mental que una persona debe hacer para entender y usar una interfaz. Un buen diseño intenta reducirla.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Qué es un modelo mental?",
+    "a": "Es la idea previa que tiene el usuario sobre cómo cree que funciona un sistema, basada en experiencias anteriores.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Por qué es importante respetar el modelo mental del usuario?",
+    "a": "Porque si la interfaz funciona de forma muy distinta a lo esperado, aumenta la confusión y la carga cognitiva.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Cuál es la diferencia entre memoria operativa y memoria a largo plazo?",
+    "a": "La memoria operativa retiene información por poco tiempo para tareas inmediatas. La de largo plazo guarda aprendizajes y experiencias previas.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "Dame un ejemplo de memoria a largo plazo aplicada a una interfaz.",
+    "a": "Usar patrones conocidos: carrito para compra, lupa para búsqueda, flecha para volver o menú hamburguesa en mobile.",
+    "cat": "Fundamentos"
+  },
+  {
+    "q": "¿Qué plantea Steve Krug con la frase “No me hagas pensar”?",
+    "a": "Que una interfaz debe ser clara e intuitiva. El usuario no debería esforzarse para entender qué hacer.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Por qué “No me hagas pensar” es una regla central de usabilidad?",
+    "a": "Porque si el usuario debe pensar demasiado, se frustra, pierde tiempo y puede abandonar la tarea.",
+    "cat": "Krug"
+  },
+  {
+    "q": "Según Krug, ¿los usuarios leen o escanean las páginas?",
+    "a": "Generalmente escanean. Buscan señales visuales, palabras clave y opciones útiles antes de leer en profundidad.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Qué significa diseñar páginas para escanear y no solo para leer?",
+    "a": "Organizar información con jerarquía, títulos claros, bloques breves, botones visibles y palabras clave fáciles de detectar.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Qué relación hay entre Krug y la carga cognitiva?",
+    "a": "Krug propone reducir el esfuerzo mental del usuario. Eso coincide con disminuir la carga cognitiva.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Qué sería una interfaz que obliga demasiado a pensar?",
+    "a": "Menús ambiguos, botones sin etiqueta clara, formularios largos, navegación escondida o textos internos que el usuario no entiende.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Qué significa “no me hagas perder el tiempo” en UX?",
+    "a": "Que la interfaz debe permitir completar tareas de manera rápida y clara, evitando pasos innecesarios.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Qué significa “no me hagas hablar” aplicado a formularios?",
+    "a": "No pedir información innecesaria; reducir campos, usar autocompletado y solicitar solo lo imprescindible.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Por qué Krug insiste en eliminar palabras innecesarias?",
+    "a": "Porque los textos largos dificultan el escaneo, aumentan la carga cognitiva y retrasan la comprensión.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Qué significa que la usabilidad muchas veces es sentido común?",
+    "a": "Que muchos problemas se detectan observando si una persona puede usar algo sin frustrarse, aunque para el equipo no sea evidente.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Qué son las convenciones en diseño web?",
+    "a": "Patrones que los usuarios ya conocen: logo arriba, menú, lupa de búsqueda, carrito o botón de volver.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Por qué los usuarios valoran las convenciones?",
+    "a": "Porque permiten usar una interfaz sin aprender todo desde cero. Reducen esfuerzo y ayudan a orientarse.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Cuándo puede ser riesgoso romper una convención?",
+    "a": "Cuando el cambio no aporta valor y solo genera confusión o dificultad para completar tareas.",
+    "cat": "Krug"
+  },
+  {
+    "q": "¿Qué son las heurísticas de Nielsen?",
+    "a": "Son principios generales de usabilidad que sirven para evaluar interfaces y detectar problemas de diseño.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué es un análisis heurístico?",
+    "a": "Es una evaluación experta que compara una interfaz con principios de usabilidad para detectar problemas.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué errores comunes puede detectar un análisis heurístico?",
+    "a": "Navegación confusa, falta de feedback, lenguaje poco claro, inconsistencias, errores en formularios o acciones difíciles de encontrar.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Un análisis heurístico garantiza una buena UX?",
+    "a": "No. Ayuda a detectar problemas, pero debe complementarse con pruebas con usuarios reales.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Cuál es la diferencia entre análisis heurístico y test de usabilidad?",
+    "a": "El análisis heurístico lo realiza un evaluador experto. El test observa usuarios reales usando el producto.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué significa visibilidad del estado del sistema?",
+    "a": "El sistema debe informar qué está pasando: carga, error, confirmación, avance o resultado de una acción.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "Dame un ejemplo de visibilidad del estado del sistema.",
+    "a": "Una barra de progreso, un mensaje de archivo cargado, un spinner o una confirmación de compra.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué significa hablar el lenguaje del usuario?",
+    "a": "Usar palabras, conceptos y categorías comprensibles para el usuario, evitando jerga técnica o interna.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué hay que evitar al hablar el lenguaje del usuario?",
+    "a": "Tecnicismos, siglas internas, nombres de áreas o procesos que el usuario no reconoce.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué significa consistencia en una interfaz?",
+    "a": "Que elementos similares se vean y funcionen de la misma manera en todo el sistema.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Por qué la consistencia mejora la usabilidad?",
+    "a": "Porque permite que el usuario aprenda una vez y aplique ese aprendizaje en otras partes de la interfaz.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué significa prevención de errores?",
+    "a": "Diseñar para evitar que el usuario cometa errores antes de que ocurran, con restricciones, validaciones y mensajes claros.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "Dame un ejemplo de prevención de errores.",
+    "a": "Deshabilitar un botón hasta completar campos obligatorios, validar un mail o pedir confirmación antes de borrar algo.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué significa recuperación ante errores?",
+    "a": "Que el sistema ayude al usuario a entender el error y corregirlo fácilmente.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué diferencia hay entre prevenir un error y mostrar un mensaje de error?",
+    "a": "Prevenir evita que el error ocurra. El mensaje aparece después y debe ayudar a corregirlo.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué significa reconocimiento antes que recuerdo?",
+    "a": "La interfaz debe mostrar opciones visibles para que el usuario no tenga que memorizar información o pasos.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué heurística se relaciona con reducir la memoria que debe usar el usuario?",
+    "a": "Reconocimiento antes que recuerdo.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué significa control y libertad del usuario?",
+    "a": "El usuario debe poder deshacer, volver atrás o salir de una acción sin quedar atrapado.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué significa diseño estético y minimalista?",
+    "a": "Mostrar solo la información necesaria, evitando ruido visual y elementos que no aportan a la tarea.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Cuál considera que es la heurística más fuerte? Justifique.",
+    "a": "No hay única respuesta. Debe elegir una heurística y justificarla con un ejemplo claro.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué heurística faltó o se cumplió menos en su proyecto?",
+    "a": "Debe identificar una heurística, explicar el problema y proponer una mejora concreta.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué heurística se relaciona con mensajes de error claros?",
+    "a": "Ayudar a reconocer, diagnosticar y recuperarse de errores.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué heurística se relaciona con usar patrones conocidos?",
+    "a": "Consistencia y estándares.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué heurística se relaciona con confirmar que una acción se completó?",
+    "a": "Visibilidad del estado del sistema.",
+    "cat": "Heurísticas"
+  },
+  {
+    "q": "¿Qué es UX Research?",
+    "a": "Es la investigación de usuarios, comportamientos, necesidades y contextos para tomar mejores decisiones de diseño.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Para qué sirve investigar usuarios antes de diseñar?",
+    "a": "Para evitar suposiciones, comprender necesidades reales y diseñar soluciones más adecuadas.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Cuál es la diferencia entre investigación cualitativa y cuantitativa?",
+    "a": "La cualitativa busca comprender motivos y experiencias. La cuantitativa mide patrones con datos numéricos.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "Dame un ejemplo de investigación cualitativa en UX.",
+    "a": "Entrevistas, observación, pruebas moderadas o análisis de comentarios abiertos.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "Dame un ejemplo de investigación cuantitativa en UX.",
+    "a": "Encuestas, métricas de uso, tasas de conversión, tiempos de tarea o cantidad de errores.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Para qué sirve una entrevista en UX?",
+    "a": "Para conocer motivaciones, necesidades, frustraciones, lenguaje y contexto de los usuarios.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Qué tipo de preguntas conviene hacer en una entrevista UX?",
+    "a": "Preguntas abiertas, neutrales y enfocadas en experiencias reales, no en opiniones inducidas.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Qué error hay que evitar en una entrevista UX?",
+    "a": "Inducir la respuesta, buscar confirmar lo que ya pensamos o hablar más que el usuario.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Para qué sirve una encuesta en UX?",
+    "a": "Para obtener datos de más usuarios y detectar patrones, preferencias o frecuencia de comportamientos.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Cuál es la limitación de una encuesta?",
+    "a": "No siempre explica el porqué de las respuestas. Puede necesitar complementarse con entrevistas.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Qué es benchmarking en UX?",
+    "a": "Comparar productos o servicios similares para detectar buenas prácticas, problemas y oportunidades de mejora.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Qué diferencia hay entre competencia directa e indirecta?",
+    "a": "La directa ofrece una solución similar. La indirecta resuelve la misma necesidad de otra manera.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Por qué benchmarking no significa copiar?",
+    "a": "Porque sirve para analizar referencias, entender patrones y detectar oportunidades, no para replicar sin criterio.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Qué información puede surgir de un benchmarking?",
+    "a": "Estructuras comunes, errores, soluciones útiles, tono, navegación, funcionalidades y oportunidades de diferenciación.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Qué es un insight en UX?",
+    "a": "Una comprensión relevante sobre el usuario que ayuda a tomar decisiones de diseño.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Por qué un dato no siempre es un insight?",
+    "a": "Porque el dato necesita interpretación y contexto para convertirse en una idea útil para diseñar.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Qué significa validar una hipótesis en UX?",
+    "a": "Comprobar con usuarios o evidencia si una suposición inicial es correcta o debe modificarse.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Qué riesgo hay en investigar solo con personas cercanas?",
+    "a": "Puede generar sesgos y no representar al usuario real del producto.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Qué decisión del proyecto surgió a partir de la investigación?",
+    "a": "Debe mencionar una decisión concreta basada en entrevistas, encuestas, benchmarking o pruebas.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Por qué la investigación debe influir en el diseño final?",
+    "a": "Porque si no modifica decisiones, queda como formalidad y no mejora realmente la experiencia.",
+    "cat": "Investigación"
+  },
+  {
+    "q": "¿Qué es una proto-persona o protousuario?",
+    "a": "Es una representación inicial del usuario basada en hipótesis del equipo antes de validar con investigación.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué es una Persona en UX?",
+    "a": "Es una representación sintética de un tipo de usuario, basada en datos, necesidades, objetivos, comportamientos y frustraciones.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Cuál es la diferencia entre proto-persona y Persona?",
+    "a": "La proto-persona parte de hipótesis. La Persona debería construirse o validarse con investigación.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Por qué conviene empezar con una proto-persona?",
+    "a": "Porque ayuda a ordenar supuestos iniciales y luego contrastarlos con investigación.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué información debería incluir una Persona?",
+    "a": "Objetivos, necesidades, frustraciones, contexto, comportamientos, conocimientos digitales y motivaciones.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué errores se cometen al construir una Persona?",
+    "a": "Inventar datos sin evidencia, agregar información irrelevante o crear perfiles demasiado genéricos.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Por qué una Persona no representa a un único usuario?",
+    "a": "Porque sintetiza comportamientos y necesidades comunes de un grupo de usuarios.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué es un mapa de empatía?",
+    "a": "Es una herramienta para comprender qué piensa, siente, ve, escucha, dice y hace un usuario, además de sus dolores y necesidades.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Cuál es el objetivo del mapa de empatía?",
+    "a": "Ayudar a comprender al usuario para diseñar soluciones más ajustadas a sus necesidades y contexto.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué cuadrantes puede tener un mapa de empatía?",
+    "a": "Piensa y siente, ve, oye, dice y hace, dolores, necesidades o beneficios esperados.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Cómo se usó el mapa de empatía en su proyecto?",
+    "a": "Debe explicar cómo ayudó a entender al usuario y tomar decisiones de diseño.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué decisión de diseño puede surgir de un mapa de empatía?",
+    "a": "Cambiar el tono, priorizar una función, simplificar un paso, reorganizar información o resolver una frustración detectada.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué es un sesgo en UX?",
+    "a": "Es una interpretación o juicio que distorsiona la comprensión del usuario y puede llevar a decisiones incorrectas.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Cómo no caer en lugares comunes al investigar usuarios?",
+    "a": "Validando con usuarios reales, evitando diseñar para uno mismo, haciendo preguntas abiertas y contrastando fuentes.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Por qué un diseñador UX no debería diseñar para sí mismo?",
+    "a": "Porque sus hábitos y conocimientos no necesariamente representan a los usuarios reales.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué es un escenario en UX?",
+    "a": "Es una historia de uso que describe a un usuario, su contexto, objetivo, problema y situación de interacción.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Para qué sirven los escenarios?",
+    "a": "Para entender el contexto de uso y diseñar experiencias más realistas.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué elementos debería contener un escenario?",
+    "a": "Usuario, contexto, objetivo, situación, obstáculos y resultado esperado.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué escenario desarrollaron en su proyecto?",
+    "a": "Debe describir un escenario concreto trabajado por el grupo.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué diferencia hay entre una Persona y un escenario?",
+    "a": "La Persona describe un tipo de usuario. El escenario describe una situación de uso concreta.",
+    "cat": "Usuarios"
+  },
+  {
+    "q": "¿Qué es Arquitectura de Información?",
+    "a": "Es la organización, clasificación y estructuración de contenidos para que el usuario pueda encontrarlos y comprenderlos fácilmente.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Por qué la arquitectura de información es importante en UX?",
+    "a": "Porque permite navegar, encontrar información y completar tareas sin confusión.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Qué es un diagrama de flujo (User Flow)?",
+    "a": "Es una representación del recorrido que realiza el usuario para completar una tarea dentro de una interfaz.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Cuál es el objetivo de un diagrama de flujo?",
+    "a": "Visualizar pasos, decisiones y recorridos para detectar problemas antes de diseñar pantallas.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Qué información aporta un diagrama de flujo antes de hacer wireframes?",
+    "a": "Ayuda a definir pantallas, acciones, navegación, caminos posibles y puntos de decisión.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Cuál es la principal limitación de un diagrama de flujo?",
+    "a": "Puede representar un recorrido ideal, pero no muestra completamente emociones, dudas o comportamientos reales.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Qué errores suelen aparecer en un diagrama de flujo?",
+    "a": "Pasos innecesarios, caminos sin salida, decisiones confusas, recorridos largos o acciones redundantes.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Qué diferencia hay entre un diagrama de flujo y un escenario?",
+    "a": "El diagrama muestra pasos y navegación. El escenario describe contexto, usuario, necesidad y situación.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Qué es Card Sorting?",
+    "a": "Es una técnica en la que usuarios agrupan y nombran contenidos para entender cómo organizan la información.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Cuál es el objetivo del Card Sorting?",
+    "a": "Diseñar una arquitectura de información más cercana al modelo mental de los usuarios.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿En qué etapa conviene hacer Card Sorting?",
+    "a": "En investigación o descubrimiento, antes de cerrar la navegación y la estructura del sitio.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Por qué no conviene diseñar la navegación solo desde la lógica de la empresa?",
+    "a": "Porque la organización interna no siempre coincide con la forma en que el usuario busca o entiende la información.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Qué son los rótulos o labels en una interfaz?",
+    "a": "Son nombres de secciones, botones o categorías que ayudan al usuario a entender qué encontrará o qué acción realizará.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Por qué los rótulos deben ser claros?",
+    "a": "Porque el usuario escanea rápido y necesita comprender las opciones sin esfuerzo.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Qué son las migas de pan o breadcrumbs?",
+    "a": "Son una ayuda de navegación que muestra la ubicación del usuario dentro de la estructura del sitio.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Para qué sirven las breadcrumbs?",
+    "a": "Ayudan a orientarse, volver a niveles anteriores y entender la jerarquía del sitio.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Qué relación hay entre arquitectura de información y SEO?",
+    "a": "Una estructura clara ayuda a los usuarios y también a que los buscadores comprendan mejor el contenido.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Qué problema puede generar una mala arquitectura de información?",
+    "a": "Usuarios perdidos, tareas incompletas, abandono, navegación confusa y mayor carga cognitiva.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Cómo se relaciona el modelo mental con el Card Sorting?",
+    "a": "El Card Sorting permite descubrir cómo los usuarios agrupan información según su propio modelo mental.",
+    "cat": "Arquitectura"
+  },
+  {
+    "q": "¿Qué es un wireframe?",
+    "a": "Es un esquema visual básico de una interfaz que muestra estructura, jerarquía y organización sin enfocarse en el diseño final.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Para qué sirve un wireframe?",
+    "a": "Para planificar pantallas, organizar contenido y validar estructura antes de invertir tiempo en diseño visual.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué claves ayudan a armar un buen wireframe?",
+    "a": "Objetivos claros, contenido definido, tamaños reales, jerarquía, navegación y no saltear etapas previas.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Por qué no conviene empezar diseñando pantallas finales?",
+    "a": "Porque antes hay que investigar, organizar información y definir recorridos para evitar rediseños innecesarios.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué es un prototipo de baja fidelidad?",
+    "a": "Una representación simple, esquemática y rápida para probar estructura o flujo.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué es un prototipo de alta fidelidad?",
+    "a": "Una versión más cercana al producto final, con diseño visual, interacción y componentes más definidos.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué diferencia hay entre wireframe y prototipo?",
+    "a": "El wireframe muestra estructura; el prototipo permite simular interacción y probar recorridos.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Para qué sirve prototipar antes de desarrollar?",
+    "a": "Para detectar errores, validar ideas y corregir problemas antes de invertir en programación.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué es un test de usabilidad?",
+    "a": "Una prueba donde usuarios realizan tareas en una interfaz mientras se observan dificultades, errores y comportamientos.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué mide un test de usabilidad?",
+    "a": "Eficacia, eficiencia, errores, comprensión, satisfacción y dificultades para completar tareas.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué es un test moderado?",
+    "a": "Una prueba en la que un moderador guía la sesión, observa y puede hacer preguntas al usuario.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué es un test no moderado?",
+    "a": "Una prueba que el usuario realiza solo, generalmente con instrucciones grabadas o remotas.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué es Guerrilla Testing?",
+    "a": "Pruebas rápidas y de bajo costo con pocos usuarios para detectar problemas evidentes de usabilidad.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Por qué no hace falta testear con muchos usuarios para detectar problemas iniciales?",
+    "a": "Porque con pocos usuarios suelen aparecer muchos problemas importantes de usabilidad.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué problema encontraron en el test de su proyecto?",
+    "a": "Debe mencionar una dificultad observada y cómo la resolvieron o podrían resolverla.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué diferencia hay entre lo que el usuario dice y lo que el usuario hace?",
+    "a": "Lo que dice puede estar influido por opinión o deseo. Observar lo que hace permite detectar problemas reales.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Por qué es importante observar al usuario durante un test?",
+    "a": "Porque muchas dificultades aparecen en sus acciones, dudas, pausas o errores, aunque no las verbalice.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué es iterar en UX?",
+    "a": "Mejorar una solución en ciclos sucesivos a partir de feedback, pruebas y nuevos hallazgos.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿El primer prototipo debería ser perfecto?",
+    "a": "No. Debe servir para aprender, detectar problemas y mejorar.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué harían distinto en su proyecto después de testear?",
+    "a": "Debe responder con una mejora concreta basada en hallazgos del test.",
+    "cat": "Wireframes y testing"
+  },
+  {
+    "q": "¿Qué son las leyes de Gestalt?",
+    "a": "Principios de percepción que explican cómo las personas organizan visualmente elementos en una composición.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué dice la ley de proximidad?",
+    "a": "Los elementos cercanos se perciben como relacionados.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "Dame un ejemplo de proximidad aplicada a una interfaz.",
+    "a": "Agrupar etiqueta y campo de formulario, o reunir botones relacionados en una misma zona.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué dice la ley de semejanza?",
+    "a": "Los elementos que se parecen por forma, color o tamaño se perciben como parte de un mismo grupo.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué dice la ley de figura-fondo?",
+    "a": "Las personas distinguen un elemento principal sobre un fondo. Si no hay contraste, la lectura se dificulta.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué dice la ley de continuidad?",
+    "a": "El ojo tiende a seguir líneas, recorridos o patrones visuales continuos.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué dice la ley de cierre?",
+    "a": "La mente completa formas incompletas cuando reconoce una estructura.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Cómo ayudan las leyes de Gestalt a la usabilidad?",
+    "a": "Permiten ordenar, agrupar y jerarquizar elementos para que el usuario entienda más rápido la interfaz.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué es Diseño de Interacción?",
+    "a": "Es el diseño de las acciones del usuario sobre un sistema y de las respuestas que el sistema ofrece.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué elementos intervienen en una interacción?",
+    "a": "La acción del usuario, la respuesta del sistema y el feedback que recibe.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Por qué el feedback es clave en diseño de interacción?",
+    "a": "Porque informa al usuario qué ocurrió después de una acción y reduce incertidumbre.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "Dame un ejemplo de feedback visual.",
+    "a": "Un botón que cambia de estado, una confirmación, una alerta o una animación de carga.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué es una guía de estilo para una app o web?",
+    "a": "Un documento o sistema que define reglas visuales y de uso: colores, tipografías, íconos, componentes y tono.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué elementos forman parte de la identidad visual?",
+    "a": "Logo, tipografías, colores, íconos, estilo gráfico, imágenes y componentes visuales.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Por qué el logo debe ser versátil en digital?",
+    "a": "Porque debe funcionar en distintos tamaños y formatos: favicon, redes, encabezado, app y fondos claros u oscuros.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué versiones conviene tener de un logotipo?",
+    "a": "Horizontal, vertical, monocromática, para fondo claro y para fondo oscuro.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué función cumplen los colores en una interfaz?",
+    "a": "Construyen identidad, jerarquizan, guían la atención y pueden comunicar estados o emociones.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué hay que tener en cuenta al elegir colores para UX?",
+    "a": "Contraste, legibilidad, consistencia, accesibilidad y coherencia con la marca.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué función cumplen los íconos en una interfaz?",
+    "a": "Ayudan a reconocer acciones, simplifican la lectura y reducen carga cognitiva si son claros.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué características debe tener un buen sistema de íconos?",
+    "a": "Claridad, consistencia, simplicidad, coherencia de estilo y comprensión por parte del usuario.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué hay que considerar al elegir tipografías para una interfaz?",
+    "a": "Legibilidad en pantalla, tamaños adecuados, jerarquía, consistencia y coherencia con la identidad.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Puede una mala elección visual afectar la UX?",
+    "a": "Sí. Colores, tipografías o íconos mal usados pueden dificultar lectura, navegación, confianza y comprensión.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué significa consistencia visual?",
+    "a": "Mantener reglas estables de color, tipografía, componentes y estilos para que la interfaz sea predecible.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué relación hay entre jerarquía visual y escaneo de páginas?",
+    "a": "Una buena jerarquía permite que el usuario encuentre rápidamente lo importante al escanear.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué es un CTA?",
+    "a": "Un llamado a la acción: botón o elemento que invita a realizar una acción concreta, como comprar, registrarse o enviar.",
+    "cat": "Diseño visual e interacción"
+  },
+  {
+    "q": "¿Qué es Eye Tracking?",
+    "a": "Es una técnica que registra el movimiento de los ojos para analizar cómo una persona observa una interfaz.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué son los movimientos oculares sacádicos?",
+    "a": "Movimientos rápidos del ojo entre puntos de atención; durante ellos la visión es limitada.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué es una fijación ocular?",
+    "a": "Es el momento en que el ojo se detiene para enfocar y procesar información con mayor nitidez.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Por qué las fijaciones son importantes en UX?",
+    "a": "Porque muestran qué elementos captan atención y cuáles pueden pasar desapercibidos.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué información aporta un estudio de Eye Tracking?",
+    "a": "Qué mira el usuario, qué ignora, cómo recorre la página y dónde puede haber confusión.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Por qué no leemos una página web de principio a fin?",
+    "a": "Porque normalmente escaneamos con movimientos rápidos y fijamos la atención en elementos relevantes.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué es un Heatmap?",
+    "a": "Una visualización que muestra zonas de mayor atención, clics, interacción o desplazamiento según la herramienta utilizada.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué diferencia hay entre Heatmap y Eye Tracking?",
+    "a": "El Eye Tracking registra la mirada. El Heatmap visualiza concentración de atención o interacción, según el tipo de medición.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué es un mapa de scroll?",
+    "a": "Una visualización que muestra hasta qué profundidad llegan los usuarios al desplazarse por una página.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Para qué sirve un mapa de scroll?",
+    "a": "Para saber si los usuarios ven contenidos importantes o si quedan demasiado abajo en la página.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Cómo usarías Eye Tracking para mejorar una Landing Page?",
+    "a": "Verificar si el usuario encuentra rápido el título, la propuesta de valor y el CTA.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué problema indica que muchos usuarios no miren el botón principal?",
+    "a": "Puede haber baja jerarquía visual, mala ubicación, poco contraste o exceso de distracciones.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué relación hay entre movimientos sacádicos y diseño para escaneo?",
+    "a": "Como el usuario salta visualmente entre puntos, la interfaz debe tener señales claras y jerarquía.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué elemento debe captar rápido la atención en una Landing Page?",
+    "a": "El mensaje principal y el CTA, porque están ligados al objetivo de conversión.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué dato de un Heatmap puede ser útil para rediseñar una página?",
+    "a": "Zonas ignoradas, clics en elementos no clickeables, concentración de atención o baja llegada al final.",
+    "cat": "Eye tracking"
+  },
+  {
+    "q": "¿Qué significa Mobile First?",
+    "a": "Diseñar primero para dispositivos móviles y luego adaptar la interfaz a pantallas más grandes.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Por qué hoy se recomienda Mobile First?",
+    "a": "Porque gran parte del acceso ocurre desde celulares y obliga a priorizar lo esencial desde el inicio.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué es Responsive Design o diseño adaptativo?",
+    "a": "Es adaptar la interfaz a distintos tamaños de pantalla para que funcione en celular, tablet y escritorio.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué diferencia hay entre Mobile First y Responsive Design?",
+    "a": "Mobile First define el proceso: empezar por móvil. Responsive describe la adaptación a distintos tamaños.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Un sitio responsive siempre fue pensado Mobile First?",
+    "a": "No. Puede haber sido diseñado para escritorio y luego adaptado a móvil.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué es Thumb-Friendly Design?",
+    "a": "Diseñar pensando en el alcance natural del pulgar al usar el celular con una sola mano.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Dónde conviene ubicar acciones importantes en mobile?",
+    "a": "En zonas de fácil alcance del pulgar, generalmente parte inferior o central de la pantalla.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué problema genera poner un CTA clave en la esquina superior derecha del celular?",
+    "a": "Puede ser difícil de alcanzar con una mano, aumentar esfuerzo y afectar la usabilidad.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué errores son comunes en interfaces móviles?",
+    "a": "Botones pequeños, poco espacio, textos chicos, acciones importantes en zonas difíciles y exceso de contenido.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué es SEO?",
+    "a": "Optimización para motores de búsqueda. Busca mejorar la visibilidad orgánica de un sitio.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué es SEM?",
+    "a": "Marketing en buscadores mediante anuncios pagos para obtener visibilidad rápida.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Cuál es la diferencia entre SEO y SEM?",
+    "a": "SEO es orgánico y de largo plazo. SEM es pago, más inmediato y suele pagar por clic.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Por qué un diseñador UX debería conocer SEO?",
+    "a": "Porque estructura, contenidos claros, navegación y rendimiento influyen en la experiencia y en la visibilidad.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué relación hay entre SEO y arquitectura de información?",
+    "a": "Una estructura clara ayuda al usuario y también a que el buscador entienda el sitio.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué es una Landing Page?",
+    "a": "Una página diseñada para un objetivo específico, generalmente conversión: registro, compra, descarga o contacto.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué es una Home Page?",
+    "a": "La página principal de un sitio, que presenta la marca, orienta al usuario y ofrece caminos hacia distintas secciones.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué diferencia hay entre Landing Page y Home Page?",
+    "a": "La Home orienta hacia varias secciones. La Landing busca una acción concreta con menos distracciones.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Cuándo usarías una Landing Page?",
+    "a": "En campañas específicas de SEM, lanzamiento, promoción, inscripción o captación de contactos.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué elementos no deberían faltar en una Landing Page?",
+    "a": "Título claro, propuesta de valor, CTA visible, información relevante, confianza, formulario o acción principal.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué errores de UX aparecen en Landing Pages?",
+    "a": "Demasiados objetivos, CTA débil, formularios largos, exceso de información, mala jerarquía o carga lenta.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué relación hay entre Landing Page y conversión?",
+    "a": "La Landing está diseñada para guiar al usuario hacia una acción y mejorar la tasa de conversión.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Por qué una Landing Page suele usarse en SEM?",
+    "a": "Porque el anuncio pago necesita llevar al usuario a una página enfocada en la acción prometida.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué significa CPC en SEM?",
+    "a": "Costo por clic: lo que se paga cada vez que un usuario hace clic en el anuncio.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Por qué una página lenta afecta SEO y UX?",
+    "a": "Porque empeora la experiencia, aumenta abandono y puede perjudicar la visibilidad en buscadores.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué es una propuesta de valor en una Landing Page?",
+    "a": "La explicación clara de qué se ofrece y por qué al usuario le conviene avanzar.",
+    "cat": "Mobile, SEO y Landing"
+  },
+  {
+    "q": "¿Qué representa el Iceberg de UX?",
+    "a": "Que la interfaz visible es solo una parte del trabajo; debajo hay investigación, estrategia, arquitectura, flujos y decisiones previas.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué elementos forman la parte visible del Iceberg?",
+    "a": "Pantallas, diseño visual, colores, tipografías, botones, componentes e interacción visible.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué elementos forman la parte no visible del Iceberg?",
+    "a": "Investigación, objetivos, usuarios, mapa de empatía, arquitectura, escenarios, flujos, estrategia y validaciones.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Por qué muchas personas creen que UX es solo diseñar pantallas?",
+    "a": "Porque la interfaz es lo más visible, aunque gran parte del trabajo ocurre antes.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué pasa si solo se diseña la parte visible del Iceberg?",
+    "a": "Puede verse bien pero no responder a necesidades reales ni resolver problemas de usabilidad.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué es el proceso de Diseño UX?",
+    "a": "Un proceso iterativo que investiga, define problemas, diseña soluciones, prototipa, testea y mejora.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué representa el Doble Diamante en diseño?",
+    "a": "Un modelo de proceso con momentos de apertura y cierre: investigar, definir, desarrollar y entregar.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué ocurre en la etapa de investigación o descubrimiento?",
+    "a": "Se busca comprender el problema, el usuario, el contexto y las necesidades.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué ocurre en la etapa de desarrollo?",
+    "a": "Se generan, prototipan y prueban soluciones posibles.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿En qué etapa ubicarías el Card Sorting?",
+    "a": "En investigación o descubrimiento, porque ayuda a organizar información antes de diseñar navegación.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué es Time Boxing?",
+    "a": "Trabajar con bloques de tiempo definidos para lograr un objetivo concreto, como ideas, bocetos o wireframes.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Para qué sirve el Time Boxing en UX?",
+    "a": "Ayuda a mantener foco, avanzar, evitar perfeccionismo y obtener resultados concretos en poco tiempo.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué significa trabajar con cajas de tiempo?",
+    "a": "Asignar un tiempo fijo a una actividad y pasar luego a revisar, decidir o continuar con otra etapa.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "Dame un ejemplo de Time Boxing aplicado al diseño de una pantalla.",
+    "a": "10 minutos para entender el problema, 15 para ideas, 20 para wireframe, 10 para revisar y 5 para presentar.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué resultados pueden surgir de un Time Box?",
+    "a": "Ideas, bocetos, wireframes, alternativas de diseño, decisiones o prototipos iniciales.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué riesgo hay si no se usa Time Boxing?",
+    "a": "Quedarse bloqueado, extender tareas, perder foco y llegar tarde a pruebas o entregas.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué significa accesibilidad en UX?",
+    "a": "Diseñar para que personas con distintas capacidades puedan usar el producto.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué diferencia hay entre accesibilidad e inclusión?",
+    "a": "Accesibilidad se enfoca en que el producto pueda usarse. Inclusión considera diversidad cultural, social, contextual y de capacidades.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué es diseño inclusivo?",
+    "a": "Diseñar considerando diversidad de personas, contextos y capacidades desde el inicio.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "Dame un ejemplo de decisión accesible en una interfaz.",
+    "a": "Buen contraste, textos legibles, botones grandes, etiquetas claras, subtítulos o navegación compatible con teclado.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Por qué el contraste de color afecta la accesibilidad?",
+    "a": "Porque si no hay contraste suficiente, muchas personas no pueden leer o distinguir elementos.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué relación hay entre accesibilidad y buena UX?",
+    "a": "Una interfaz accesible suele ser más clara, usable y beneficiosa para más personas.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué etapa del proceso de UX considera más importante? Justifique.",
+    "a": "No hay respuesta única. Debe justificar con relación al proyecto y al valor para el usuario.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué aprendieron del proceso de UX en el proyecto grupal?",
+    "a": "Debe mencionar una experiencia concreta: investigación, hallazgo, cambio, test o mejora.",
+    "cat": "Proceso"
+  },
+  {
+    "q": "¿Qué mejorarían del proyecto si tuvieran dos semanas más?",
+    "a": "Debe proponer una mejora concreta y justificarla desde UX.",
+    "cat": "Proceso"
+  }
+];
+
+</script>
+  <script>
+
+const KEY = "final_oral_ux_v1";
+function shuffle(array){const a=[...array];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function balancedShuffle(){const groups={};QUESTIONS.forEach((q,index)=>{const cat=q.cat||"General";if(!groups[cat])groups[cat]=[];groups[cat].push(index);});Object.keys(groups).forEach(cat=>{groups[cat]=shuffle(groups[cat]);});const order=[];const cats=shuffle(Object.keys(groups));while(order.length<QUESTIONS.length){for(const cat of cats){if(groups[cat].length){order.push(groups[cat].pop());}}}return order;}
+function defaultState(){return{order:balancedShuffle(),used:[]};}
+function loadState(){try{const saved=JSON.parse(localStorage.getItem(KEY));if(saved&&saved.order&&saved.order.length===QUESTIONS.length){return saved;}}catch(error){}return defaultState();}
+function saveState(){localStorage.setItem(KEY,JSON.stringify(state));}
+let state=loadState();
+function render(){const grid=document.getElementById("grid");grid.innerHTML="";state.order.forEach((questionIndex,boardIndex)=>{const tile=document.createElement("div");tile.className="tile"+(state.used.includes(boardIndex)?" used":"");tile.textContent=boardIndex+1;tile.onclick=()=>openQuestion(boardIndex);grid.appendChild(tile);});document.getElementById("counter").textContent=`${state.used.length} usadas`;document.getElementById("total").textContent=`${QUESTIONS.length} preguntas`;}
+function openQuestion(boardIndex){const questionIndex=state.order[boardIndex];const item=QUESTIONS[questionIndex];if(!state.used.includes(boardIndex)){state.used.push(boardIndex);saveState();render();}document.getElementById("modalNum").textContent=`Número ${boardIndex+1}`;document.getElementById("category").textContent=item.cat||"";document.getElementById("question").textContent=item.q;document.getElementById("answer").textContent=item.a;const answer=document.getElementById("answer");answer.classList.remove("show");document.getElementById("showAnswer").textContent="Mostrar respuesta esperada";document.getElementById("modal").classList.add("open");}
+function closeModal(){document.getElementById("modal").classList.remove("open");}
+document.getElementById("close").onclick=closeModal;document.getElementById("markClose").onclick=closeModal;document.getElementById("showAnswer").onclick=()=>{const answer=document.getElementById("answer");const shouldShow=!answer.classList.contains("show");answer.classList.toggle("show",shouldShow);document.getElementById("showAnswer").textContent=shouldShow?"Ocultar respuesta":"Mostrar respuesta esperada";};
+document.getElementById("newRound").onclick=()=>{if(confirm("¿Mezclar preguntas y limpiar tachados para una nueva tanda?")){state=defaultState();saveState();render();}};
+document.getElementById("clearUsed").onclick=()=>{state.used=[];saveState();render();};
+document.getElementById("resetAll").onclick=()=>{if(confirm("¿Reiniciar y mezclar? Esto borra el estado guardado, mezcla preguntas y limpia tachados.")){localStorage.removeItem(KEY);state=defaultState();render();}};
+document.addEventListener("keydown",event=>{if(event.key==="Escape")closeModal();if(event.key.toLowerCase()==="r")document.getElementById("showAnswer").click();});render();
+
+</script>
+</body>
+</html>

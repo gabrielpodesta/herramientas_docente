@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Final Oral - Periodismo de Datos</title>
+<style>
+:root{--bg:#07131f;--panel:#0e2033;--ink:#f4f8fb;--muted:#aebdca;--accent:#00a6c8;--accent2:#c4429b;--used:#26364a;--ok:#18a15f;}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 85% 10%,#0c8fa5 0,#07131f 48%,#050b12 100%);color:var(--ink);min-height:100vh}
+header{padding:28px 36px 14px;display:flex;gap:22px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(28px,4vw,54px);line-height:.95;letter-spacing:-1.5px}.brandBlock{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}.uadeMark{border:1px solid rgba(255,255,255,.32);border-radius:14px;padding:10px 14px;line-height:1;background:rgba(255,255,255,.08);box-shadow:0 10px 30px rgba(0,0,0,.18)}.uadeMark .uade{font-weight:950;font-size:28px;letter-spacing:1px}.uadeMark .uadeSub{font-size:9px;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;margin-top:3px} .sub{color:var(--muted);font-size:16px;margin-top:8px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end} button{border:0;border-radius:12px;padding:11px 16px;font-weight:800;cursor:pointer;background:#fff;color:#0b1420;box-shadow:0 6px 14px rgba(0,0,0,.2)} button.secondary{background:#142941;color:#fff;border:1px solid rgba(255,255,255,.16)} button.danger{background:#3a1732;color:#fff;border:1px solid rgba(255,255,255,.16)}
+main{padding:12px 34px 34px} .status{display:flex;gap:18px;align-items:center;color:var(--muted);font-weight:700;margin:0 0 16px;flex-wrap:wrap} .pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:8px 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:12px} .tile{height:66px;border-radius:16px;background:linear-gradient(180deg,#0fb0cc,#087b98);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:white;border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 18px rgba(0,0,0,.25);position:relative;user-select:none;cursor:pointer} .tile.used{background:linear-gradient(180deg,var(--used),#172334);color:#7c8998;text-decoration:line-through;text-decoration-thickness:4px} .tile.used:after{content:"✓";position:absolute;right:8px;top:5px;color:var(--ok);font-size:18px;text-decoration:none}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:24px;z-index:10} .modal.open{display:flex} .card{width:min(980px,96vw);max-height:92vh;overflow:auto;border-radius:28px;background:#f7f9fb;color:#111b24;box-shadow:0 30px 80px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.35)} .cardTop{padding:20px 24px;background:#0d253b;color:white;display:flex;align-items:center;justify-content:space-between;gap:16px} .num{font-size:22px;font-weight:900;color:#78e7ff} .close{font-size:28px;background:transparent;color:white;box-shadow:none;padding:4px 8px}
+.content{padding:34px 38px 40px} .q{font-size:clamp(28px,4vw,48px);line-height:1.08;font-weight:900;letter-spacing:-1px;margin:0 0 28px} .answerBox{display:none;margin-top:24px;border-left:8px solid var(--accent2);background:#fff;border-radius:14px;padding:22px 24px;font-size:22px;line-height:1.4} .answerBox.show{display:block} .topic{display:inline-block;margin-bottom:18px;padding:7px 12px;background:#e8eef4;border-radius:999px;color:#405164;font-weight:800} .modalActions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px} .modalActions button{background:#0d253b;color:white} .modalActions button.alt{background:#c4429b}
+.small{font-size:13px;color:#8b9aaa;margin-top:16px} @media (max-width:700px){header,main{padding-left:18px;padding-right:18px}.grid{grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:9px}.tile{height:56px;font-size:22px}.content{padding:24px}}
+
+
+
+
+.footerLogo{
+  position:fixed;
+  right:24px;
+  bottom:18px;
+  width:105px;
+  opacity:.82;
+  pointer-events:none;
+  z-index:5;
+}
+.footerLogo img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+</style>
+</head>
+<body>
+<header><div class="brandBlock"><div><h1>Final Oral<br>Periodismo de Datos</h1><div class="sub">Tablero aleatorio con preguntas independientes. Al tocar un número, queda tachado.</div></div><div class="controls"><button id="newRound">Nueva tanda</button><button class="secondary" id="clearUsed">Limpiar tachados</button><button class="danger" id="resetAll">Reiniciar y mezclar</button></div></header>
+<main><div class="status"><span class="pill" id="counter">0 usadas</span><span class="pill" id="total"></span><span class="pill">Tip: “Nueva tanda” mezcla preguntas y limpia el tablero. “Limpiar tachados” mantiene el orden.</span></div><section class="grid" id="grid"></section></main>
+<div class="modal" id="modal"><article class="card"><div class="cardTop"><div><div class="num" id="modalNum"></div><div id="realId" style="font-size:12px;color:#b9cad8"></div></div><button class="close" id="close">×</button></div><div class="content"><span class="topic" id="topic">Pregunta oral</span><h2 class="q" id="question"></h2><div class="modalActions"><button id="showAnswer">Mostrar respuesta esperada</button><button class="alt" id="markClose">Marcar y volver al tablero</button></div><div class="answerBox" id="answer"></div><div class="small">Las respuestas son guía docente: pueden aceptarse formulaciones equivalentes.</div></div></article></div>
+<script>
+const QUESTIONS = [
+  {
+    "q": "¿Qué es un dato?",
+    "a": "Un dato es una representación numérica, textual, visual o simbólica de un hecho, una observación, una medida o una descripción."
+  },
+  {
+    "q": "¿Qué es un dato en el contexto de la Ciencia de Datos?",
+    "a": "Es una pieza de información cruda que se recopila y almacena para su posterior análisis. Puede ser un número, una palabra, una imagen, un video, un valor de píxel o un registro."
+  },
+  {
+    "q": "Dé ejemplos de datos estructurados y no estructurados.",
+    "a": "Estructurados: una planilla con columnas de fecha, provincia y cantidad de casos; una base CSV; una tabla de resultados electorales. No estructurados: textos, imágenes, videos, audios, posteos en redes o documentos escaneados."
+  },
+  {
+    "q": "En Buenos Aires Data, ¿encontramos datos estructurados o no estructurados?",
+    "a": "Principalmente datos estructurados, como CSV o tablas. Pero eso no significa que estén listos para usar: muchas veces hay que limpiarlos, revisar formatos, campos vacíos o inconsistencias."
+  },
+  {
+    "q": "¿Me puede contar de qué trataba el proyecto Dear Data?",
+    "a": "Fue un proyecto de visualización personal entre Giorgia Lupi y Stefanie Posavec. Una vivía en Inglaterra y la otra en Nueva York. Durante un año registraron datos cotidianos y se enviaron postales dibujadas a mano para representar esos datos."
+  },
+  {
+    "q": "¿Cómo es el proceso general de un proyecto de Periodismo de Datos?",
+    "a": "Comienza con una pregunta o problema, luego se buscan datos, se evalúa la fuente, se limpian, se analizan, se verifican, se visualizan y finalmente se construye una historia periodística."
+  },
+  {
+    "q": "¿Por qué los periodistas deberían saber trabajar con datos?",
+    "a": "Porque hoy la información circula en grandes volúmenes y en tiempo real. Los datos permiten verificar, contextualizar, detectar patrones y encontrar historias que no son evidentes a simple vista."
+  },
+  {
+    "q": "¿Cómo cambió el rol del periodista con el Periodismo de Datos?",
+    "a": "El periodista no solo compite por ser el primero en publicar: también analiza, verifica, contextualiza e interpreta información para explicar qué significa un fenómeno."
+  },
+  {
+    "q": "¿Qué ventajas aporta el Periodismo de Datos a una investigación?",
+    "a": "Permite descubrir patrones, respaldar afirmaciones con evidencia, transformar problemas abstractos en información concreta y crear visualizaciones o herramientas útiles para la audiencia."
+  },
+  {
+    "q": "¿Por qué los datos, por sí solos, no alcanzan para hacer una buena investigación periodística?",
+    "a": "Porque necesitan contexto, limpieza, análisis, verificación e interpretación. El periodista convierte los datos en una historia comprensible."
+  },
+  {
+    "q": "¿Qué habilidades debería incorporar un periodista que trabaja con datos?",
+    "a": "Buscar datos, evaluar fuentes, limpiar bases, analizar información, interpretar resultados, visualizar datos y comunicar hallazgos con claridad."
+  },
+  {
+    "q": "¿Por qué un mismo conjunto de datos puede dar lugar a distintas historias?",
+    "a": "Porque depende de la pregunta periodística. Un censo, por ejemplo, puede servir para analizar educación, vivienda, envejecimiento, migraciones o desigualdad."
+  },
+  {
+    "q": "¿Qué enseñanza dejó Google Flu Trends según lo trabajado en clase?",
+    "a": "Que tener muchos datos no garantiza buenos resultados. Los modelos deben validarse, contextualizarse y revisarse porque pueden fallar o sobreestimar fenómenos."
+  },
+  {
+    "q": "¿Qué es Big Data?",
+    "a": "Es el trabajo con grandes volúmenes de datos, de distintas fuentes y velocidades, que requieren herramientas y criterios adecuados para analizarlos y obtener conocimiento."
+  },
+  {
+    "q": "¿Por qué Big Data no significa automáticamente mejor información?",
+    "a": "Porque los datos pueden estar sesgados, incompletos, mal interpretados o fuera de contexto. El volumen no reemplaza el análisis crítico."
+  },
+  {
+    "q": "¿Por qué el Periodismo de Datos suele ser interdisciplinario?",
+    "a": "Porque combina periodismo, análisis de datos, diseño, programación, visualización, edición y a veces UX o desarrollo de aplicaciones."
+  },
+  {
+    "q": "En un proyecto de Periodismo de Datos, ¿qué perfiles pueden participar y qué aporta cada uno?",
+    "a": "Periodistas formulan preguntas y verifican; analistas procesan datos; programadores automatizan o crean herramientas; diseñadores e infógrafos visualizan; editores ordenan la historia."
+  },
+  {
+    "q": "¿Me puede contar quién fue John Snow y por qué es importante?",
+    "a": "Fue un médico inglés del siglo XIX que investigó un brote de cólera en Londres. Recolectó datos, los ubicó en un mapa y ayudó a demostrar que el brote estaba relacionado con agua contaminada."
+  },
+  {
+    "q": "¿Qué sostenía la teoría del miasma y cuál era la hipótesis de John Snow?",
+    "a": "La teoría del miasma decía que las enfermedades se transmitían por aire contaminado. Snow sospechaba que el cólera se transmitía por un germen o agente presente en el agua contaminada."
+  },
+  {
+    "q": "En el caso de John Snow, ¿qué datos recolectó y cómo los usó para investigar el brote de cólera?",
+    "a": "Recolectó direcciones de personas fallecidas, ubicó las bombas de agua del barrio y habló con vecinos. Luego representó esos datos en un mapa y observó que las muertes se concentraban alrededor de la bomba de Broad Street."
+  },
+  {
+    "q": "¿Por qué el mapa fue tan importante en la investigación de John Snow?",
+    "a": "Porque permitió ver un patrón espacial que una tabla no mostraba con tanta claridad: la concentración de muertes alrededor de una bomba de agua."
+  },
+  {
+    "q": "¿Qué enseñanza deja el caso de John Snow para el Periodismo de Datos actual?",
+    "a": "Que los datos ayudan a poner a prueba hipótesis, descubrir patrones, cuestionar explicaciones aceptadas y tomar decisiones basadas en evidencia."
+  },
+  {
+    "q": "¿Por qué una visualización puede mostrar algo que una tabla no muestra con claridad?",
+    "a": "Porque organiza visualmente los datos y permite detectar tendencias, concentraciones, diferencias o valores atípicos con menor esfuerzo cognitivo."
+  },
+  {
+    "q": "¿Por qué, para comparar cantidades, muchas veces un gráfico de barras comunica mejor que un gráfico de tortas?",
+    "a": "Porque el gráfico de barras permite comparar longitudes con mayor precisión. El gráfico de tortas sirve para mostrar partes de un total, pero cuando hay varias categorías o diferencias pequeñas puede dificultar la comparación."
+  },
+  {
+    "q": "¿Cómo decide si una información debe representarse con barras, tortas, fiebre o mapa?",
+    "a": "Depende del objetivo: barras para comparar categorías; tortas para partes de un total con pocas categorías; fiebre para evolución temporal; mapa si la ubicación geográfica es relevante."
+  },
+  {
+    "q": "¿En qué situaciones utilizaría un gráfico de fiebre?",
+    "a": "Cuando se quiere mostrar la evolución o involución de una variable en el tiempo: inflación, temperatura, casos de una enfermedad, dólar o valor de mercado."
+  },
+  {
+    "q": "¿Qué error puede cometer un periodista al elegir un gráfico inadecuado?",
+    "a": "Puede confundir al lector, exagerar diferencias, ocultar patrones o inducir interpretaciones equivocadas."
+  },
+  {
+    "q": "¿Qué información comunica mejor un gráfico de barras partidas?",
+    "a": "Permite comparar la composición interna de distintas categorías y ver qué proporción representa cada parte dentro del total."
+  },
+  {
+    "q": "¿En qué situaciones usaría un mapa en lugar de un gráfico de barras?",
+    "a": "Cuando la ubicación geográfica es central para entender el fenómeno: casos por provincia, escuelas, delitos, inundaciones o resultados electorales."
+  },
+  {
+    "q": "¿Qué estudia la estadística?",
+    "a": "Estudia fenómenos aleatorios mediante la recopilación, organización, análisis e interpretación de datos."
+  },
+  {
+    "q": "¿Dónde encontramos estadísticas en la vida cotidiana?",
+    "a": "En encuestas, inflación, desempleo, censos, salud pública, deportes, clima, redes sociales, educación, tránsito y economía."
+  },
+  {
+    "q": "¿Qué es una población en estadística?",
+    "a": "Es el conjunto total de elementos que se desea estudiar y que comparten características comunes."
+  },
+  {
+    "q": "¿Qué es una muestra y por qué se utiliza?",
+    "a": "Es un subconjunto de la población. Se usa cuando estudiar toda la población es costoso, lento o imposible."
+  },
+  {
+    "q": "En una encuesta sobre estudiantes universitarios, identifique población, muestra y variables posibles.",
+    "a": "Población: todos los estudiantes universitarios definidos por el estudio. Muestra: quienes respondieron. Variables: edad, carrera, horas de estudio, género, año de cursada o promedio."
+  },
+  {
+    "q": "¿Cuál es la diferencia entre estadística descriptiva e inferencial?",
+    "a": "La descriptiva resume y presenta datos de un conjunto. La inferencial usa una muestra para estimar o sacar conclusiones sobre una población."
+  },
+  {
+    "q": "Dé un ejemplo de estadística descriptiva y uno de inferencial.",
+    "a": "Descriptiva: calcular la edad promedio de un curso. Inferencial: estimar intención de voto de una población a partir de una encuesta."
+  },
+  {
+    "q": "¿Por qué las encuestas preelectorales utilizan estadística inferencial?",
+    "a": "Porque no preguntan a toda la población, sino a una muestra representativa para estimar el comportamiento del conjunto de votantes."
+  },
+  {
+    "q": "¿Por qué la estadística descriptiva es importante para el Periodismo de Datos?",
+    "a": "Porque permite organizar, resumir, visualizar y comunicar datos de forma clara, detectando patrones y tendencias."
+  },
+  {
+    "q": "¿Cuál es la diferencia entre un parámetro y un estadístico?",
+    "a": "Un parámetro se calcula sobre toda la población; un estadístico se calcula sobre una muestra."
+  },
+  {
+    "q": "En una encuesta electoral a 2.000 personas, ¿trabajamos con población o muestra? ¿Las medidas son parámetros o estadísticos?",
+    "a": "Trabajamos con una muestra. Las medidas obtenidas son estadísticos, porque se calculan sobre una parte de la población."
+  },
+  {
+    "q": "¿Qué es una variable en estadística?",
+    "a": "Es una característica que puede tomar diferentes valores entre una unidad y otra, como edad, ingresos, cantidad de hijos o nivel educativo."
+  },
+  {
+    "q": "¿Cuál es la diferencia entre una variable discreta y una continua?",
+    "a": "La discreta se cuenta y no admite valores intermedios; la continua se mide y puede tomar valores dentro de un intervalo."
+  },
+  {
+    "q": "¿Por qué el número de estudiantes en un aula es una variable discreta?",
+    "a": "Porque se cuenta y solo toma valores enteros: puede haber 20 o 21 estudiantes, pero no 20,5."
+  },
+  {
+    "q": "¿Cuál es la diferencia entre años cumplidos y edad?",
+    "a": "Años cumplidos es discreta porque cuenta años enteros. Edad exacta es continua porque mide tiempo vivido y admite años, meses, días, horas."
+  },
+  {
+    "q": "¿Cuál es la diferencia entre una variable cuantitativa y una cualitativa?",
+    "a": "La cuantitativa toma valores numéricos. La cualitativa clasifica en categorías o atributos."
+  },
+  {
+    "q": "Clasifique: edad, género, nivel educativo, ingreso mensual y cantidad de hijos.",
+    "a": "Edad: cuantitativa continua. Género: cualitativa nominal. Nivel educativo: cualitativa ordinal. Ingreso mensual: cuantitativa continua. Cantidad de hijos: cuantitativa discreta."
+  },
+  {
+    "q": "¿Cuál es la diferencia entre variable nominal y ordinal?",
+    "a": "La nominal clasifica sin orden natural; la ordinal tiene categorías con orden o jerarquía."
+  },
+  {
+    "q": "¿Por qué nivel de estudios es ordinal y estado civil es nominal?",
+    "a": "Nivel de estudios tiene orden (primaria, secundaria, universidad). Estado civil clasifica categorías sin jerarquía."
+  },
+  {
+    "q": "Proponga cuatro variables para una encuesta universitaria e indique su tipo.",
+    "a": "Ejemplo: cantidad de materias aprobadas, cuantitativa discreta; tiempo de estudio, cuantitativa continua; carrera, cualitativa nominal; año de cursada, cualitativa ordinal."
+  },
+  {
+    "q": "¿Por qué es importante identificar el tipo de variable antes de analizar o visualizar?",
+    "a": "Porque el tipo de variable define qué análisis y qué gráfico son adecuados para interpretar correctamente los datos."
+  },
+  {
+    "q": "¿Qué es la frecuencia absoluta?",
+    "a": "Es la cantidad de veces que aparece un valor o una categoría dentro de un conjunto de datos."
+  },
+  {
+    "q": "¿Qué es la frecuencia relativa?",
+    "a": "Es la proporción que representa una categoría respecto del total. Puede expresarse como decimal o porcentaje."
+  },
+  {
+    "q": "¿Cuál es la diferencia entre frecuencia absoluta y relativa?",
+    "a": "La absoluta indica cantidad de casos; la relativa indica qué proporción o porcentaje representan esos casos sobre el total."
+  },
+  {
+    "q": "¿Qué significa que la suma de las frecuencias relativas sea 1 o 100%?",
+    "a": "Que todas las categorías juntas representan el total de los datos analizados."
+  },
+  {
+    "q": "Si 50 de 200 personas eligen una opción, ¿cómo interpreta la frecuencia absoluta y la relativa?",
+    "a": "La frecuencia absoluta es 50. La frecuencia relativa es 50 sobre 200, es decir 0,25 o 25%."
+  },
+  {
+    "q": "¿Por qué en Periodismo de Datos suele ser más útil comparar porcentajes que cantidades absolutas?",
+    "a": "Porque los porcentajes permiten comparar grupos de distinto tamaño de manera más justa."
+  },
+  {
+    "q": "Una ciudad tiene 500 casos de dengue y otra 1.000. ¿Se puede afirmar que la segunda está peor?",
+    "a": "No necesariamente. Hay que conocer la población de cada ciudad o calcular una tasa para comparar correctamente."
+  },
+  {
+    "q": "En una base del Mundial, si analizamos la cantidad de pases realizados por Leandro Paredes, ¿qué tipo de variable es?",
+    "a": "Es una variable cuantitativa discreta, porque estamos contando pases. No puede haber 20,5 pases."
+  },
+  {
+    "q": "Si un jugador dio 80 pases y 72 fueron correctos, ¿qué diferencia hay entre cantidad y porcentaje de efectividad?",
+    "a": "La cantidad de pases correctos es frecuencia absoluta. El porcentaje de efectividad es frecuencia relativa, porque relaciona los pases correctos con el total."
+  },
+  {
+    "q": "¿Por qué en una nota deportiva puede ser más útil informar porcentaje de pases correctos que solo cantidad?",
+    "a": "Porque permite comparar jugadores con distinta cantidad total de pases. La efectividad pone el dato en contexto."
+  },
+  {
+    "q": "¿Qué representa la media aritmética?",
+    "a": "Es el promedio: se obtiene sumando todos los valores y dividiendo por la cantidad de observaciones."
+  },
+  {
+    "q": "¿Qué representa la mediana?",
+    "a": "Es el valor central de un conjunto de datos ordenados. Divide los datos en dos partes iguales."
+  },
+  {
+    "q": "¿Qué representa la moda?",
+    "a": "Es el valor o categoría que aparece con mayor frecuencia."
+  },
+  {
+    "q": "¿Cuál medida es menos sensible a valores extremos: media, mediana o moda?",
+    "a": "La mediana, porque no se ve tan afectada por valores muy altos o muy bajos."
+  },
+  {
+    "q": "¿Cuándo conviene utilizar la mediana en lugar de la media?",
+    "a": "Cuando hay valores extremos u outliers que pueden distorsionar el promedio."
+  },
+  {
+    "q": "Un medio publica que el salario promedio es alto, pero hay pocos sueldos extremadamente altos. ¿Por qué puede ser engañoso?",
+    "a": "Porque esos valores elevan la media y pueden no representar a la mayoría. Conviene mirar también la mediana."
+  },
+  {
+    "q": "¿Qué se entiende por información pública?",
+    "a": "Es toda información en poder del Estado o generada, obtenida o financiada con fondos públicos, sin importar formato."
+  },
+  {
+    "q": "¿Quiénes pueden solicitar información pública?",
+    "a": "Cualquier persona física o jurídica."
+  },
+  {
+    "q": "¿Es necesario explicar el motivo por el cual se solicita información pública?",
+    "a": "No. No es obligatorio justificar para qué se pide la información."
+  },
+  {
+    "q": "Mencione tres ejemplos de información pública.",
+    "a": "Presupuesto, censos, estadísticas de salud, datos electorales, gastos de un ministerio, accidentes de tránsito o cantidad de escuelas públicas."
+  },
+  {
+    "q": "¿Toda la información que posee el Estado puede entregarse libremente?",
+    "a": "No. Existen excepciones legales, como datos personales sensibles, secreto fiscal, seguridad o información protegida por una norma."
+  },
+  {
+    "q": "¿Por qué el acceso a la información pública es importante para el Periodismo de Datos?",
+    "a": "Porque permite obtener datos oficiales para investigar, verificar, analizar fenómenos y producir historias basadas en evidencia."
+  },
+  {
+    "q": "¿Qué son los datos abiertos?",
+    "a": "Son datos disponibles para todo el mundo, reutilizables y compartibles, sin restricciones importantes de derechos de autor, patentes u otros controles."
+  },
+  {
+    "q": "¿Cuál es la diferencia entre información pública y datos abiertos?",
+    "a": "La información pública es lo que posee o produce el Estado. Los datos abiertos son datos ya publicados en formatos accesibles y reutilizables."
+  },
+  {
+    "q": "Mencione dos portales de datos abiertos vistos en clase.",
+    "a": "datos.gob.ar y BA Data. También pueden mencionarse catálogos internacionales como World Bank Data Catalog o la Reserva Federal."
+  },
+  {
+    "q": "¿Qué puede hacer un periodista si los datos que necesita no están publicados como datos abiertos?",
+    "a": "Puede realizar un pedido de acceso a la información pública al organismo correspondiente."
+  },
+  {
+    "q": "Describa el proceso para solicitar información pública a través de una plataforma web.",
+    "a": "Ingresar a la plataforma, identificarse, buscar el trámite, completar el formulario, elegir organismo, describir claramente la información, adjuntar documentación si hace falta y enviar."
+  },
+  {
+    "q": "¿Cuál es el plazo general para responder un pedido de acceso a la información pública?",
+    "a": "15 días hábiles, con posibilidad de prórroga por otros 15 días si el organismo lo justifica."
+  },
+  {
+    "q": "¿Por qué conviene buscar primero si la información ya está publicada antes de hacer un pedido?",
+    "a": "Porque si ya está como dato abierto se obtiene de inmediato y se evita un trámite administrativo."
+  },
+  {
+    "q": "¿El derecho de acceso a la información pública es absoluto? Explique con el secreto fiscal.",
+    "a": "No. Puede haber excepciones legales. El secreto fiscal puede impedir divulgar datos tributarios protegidos aunque estén en poder del Estado."
+  },
+  {
+    "q": "¿Qué enseñanza deja el caso del secreto fiscal para un periodista de datos?",
+    "a": "Que no toda información estatal es publicable. Hay que conocer límites legales y excepciones al acceso a la información."
+  },
+  {
+    "q": "¿Por qué es necesario utilizar una proyección cartográfica?",
+    "a": "Porque la Tierra es tridimensional y un mapa es plano. La proyección transforma una superficie curva en dos dimensiones."
+  },
+  {
+    "q": "¿Es posible construir un mapa perfectamente fiel a la realidad?",
+    "a": "No. Toda proyección cartográfica distorsiona alguna propiedad: áreas, formas, distancias o direcciones."
+  },
+  {
+    "q": "¿Cuál fue un aporte importante de Ptolomeo a la cartografía?",
+    "a": "Sistematizó el uso de coordenadas de latitud y longitud para ubicar puntos del mundo conocido con mayor precisión."
+  },
+  {
+    "q": "¿Qué representan la latitud y la longitud?",
+    "a": "Son coordenadas geográficas que permiten localizar un punto sobre la superficie terrestre."
+  },
+  {
+    "q": "¿Para qué fue especialmente útil la proyección de Mercator?",
+    "a": "Para la navegación, porque permite representar rumbos como líneas rectas en el mapa."
+  },
+  {
+    "q": "¿Cuál es la principal limitación de la proyección de Mercator?",
+    "a": "Distorsiona el tamaño de las superficies, especialmente cerca de los polos."
+  },
+  {
+    "q": "¿Qué son los datos geográficos vectoriales?",
+    "a": "Son datos que representan objetos mediante puntos, líneas o polígonos."
+  },
+  {
+    "q": "¿Qué son los datos geográficos ráster?",
+    "a": "Son datos representados mediante una grilla de celdas o píxeles, donde cada celda contiene un valor."
+  },
+  {
+    "q": "¿Qué diferencia hay entre dato vectorial y dato ráster?",
+    "a": "El vectorial representa objetos con geometrías; el ráster representa el territorio como una grilla de celdas."
+  },
+  {
+    "q": "¿Qué tipo de dato usaría para representar hospitales, rutas y provincias?",
+    "a": "Hospitales: puntos vectoriales. Rutas: líneas vectoriales. Provincias: polígonos vectoriales."
+  },
+  {
+    "q": "¿Qué tipo de dato usaría para representar una imagen satelital?",
+    "a": "Un dato ráster, porque está formada por celdas o píxeles."
+  },
+  {
+    "q": "¿Por qué William Playfair es considerado importante en la historia de la visualización?",
+    "a": "Porque fue pionero en el uso sistemático de gráficos estadísticos como líneas y barras para comunicar información económica e histórica."
+  },
+  {
+    "q": "¿Qué ventaja tienen los gráficos frente a una tabla de números según la idea de Playfair?",
+    "a": "No necesariamente son más precisos, pero permiten comprender de forma más simple y rápida tendencias, progresos y comparaciones."
+  },
+  {
+    "q": "¿Por qué Playfair llamó atlas a un libro que no tenía mapas geográficos tradicionales?",
+    "a": "Porque representaba datos económicos como si fueran mapas: no mapeaba territorios, sino información cuantitativa."
+  },
+  {
+    "q": "¿Quién fue Charles Minard y por qué es importante para la visualización de datos?",
+    "a": "Fue un ingeniero francés reconocido por sus visualizaciones estadísticas. Su trabajo es importante porque logró contar fenómenos complejos mediante gráficos claros, especialmente el de la campaña de Napoleón en Rusia."
+  },
+  {
+    "q": "¿Qué acontecimiento histórico representa el gráfico más famoso de Charles Minard?",
+    "a": "Representa la campaña de Napoleón en Rusia de 1812 y la pérdida progresiva de soldados durante la invasión y la retirada."
+  },
+  {
+    "q": "En el gráfico de Charles Minard sobre la campaña de Napoleón en Rusia, ¿qué información representa el grosor de la banda?",
+    "a": "El grosor de la banda representa la cantidad de soldados del ejército en cada tramo del recorrido. A medida que la banda se hace más angosta, disminuye la cantidad de soldados."
+  },
+  {
+    "q": "¿Por qué el gráfico de Charles Minard sobre la campaña de Napoleón en Rusia es considerado un hito de la visualización de datos?",
+    "a": "Porque integra en una sola visualización múltiples variables: recorrido geográfico, dirección del avance y la retirada, tamaño del ejército, temperatura y tiempo. Permite comprender con claridad la magnitud de la campaña y las pérdidas sufridas."
+  },
+  {
+    "q": "¿Qué significa que la visualización debe ser funcional antes que decorativa?",
+    "a": "Que su objetivo principal es ayudar a comprender información, no solo verse atractiva. La belleza debe estar al servicio de la claridad."
+  }
+];
+const KEY = 'bolillero_pd_v2';
+let state = loadState();
+let currentIndex = null;
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function defaultState(){ return { order: shuffle([...Array(QUESTIONS.length).keys()]), used: [] }; }
+function loadState(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s && s.order && s.order.length===QUESTIONS.length) return s; }catch(e){} return defaultState(); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function render(){ const grid=document.getElementById('grid'); grid.innerHTML=''; state.order.forEach((qIdx, boardIdx)=>{ const b=document.createElement('div'); b.className='tile'+(state.used.includes(boardIdx)?' used':''); b.textContent=boardIdx+1; b.onclick=()=>openQuestion(boardIdx); grid.appendChild(b); }); document.getElementById('counter').textContent=state.used.length+' usadas'; document.getElementById('total').textContent=QUESTIONS.length+' preguntas'; }
+function openQuestion(boardIdx){ currentIndex=boardIdx; const q=QUESTIONS[state.order[boardIdx]]; if(!state.used.includes(boardIdx)){ state.used.push(boardIdx); save(); render(); } document.getElementById('modalNum').textContent='Número '+(boardIdx+1); document.getElementById('realId').textContent='ID interno: P'+String(state.order[boardIdx]+1).padStart(3,'0'); document.getElementById('question').textContent=q.q; document.getElementById('answer').textContent=q.a; document.getElementById('answer').classList.remove('show'); document.getElementById('showAnswer').textContent='Mostrar respuesta esperada'; document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+document.getElementById('close').onclick=closeModal; document.getElementById('markClose').onclick=closeModal;
+document.getElementById('showAnswer').onclick=()=>{ const ans=document.getElementById('answer'); const show=!ans.classList.contains('show'); ans.classList.toggle('show',show); document.getElementById('showAnswer').textContent=show?'Ocultar respuesta':'Mostrar respuesta esperada'; };
+document.getElementById('newRound').onclick=()=>{ if(confirm('¿Mezclar preguntas y limpiar tachados para una nueva tanda?')){ state=defaultState(); save(); render(); } };
+document.getElementById('clearUsed').onclick=()=>{ state.used=[]; save(); render(); };
+document.getElementById('resetAll').onclick=()=>{ if(confirm('¿Reiniciar y mezclar? Esto borra el estado guardado, mezcla preguntas y limpia tachados.')){ localStorage.removeItem(KEY); state=defaultState(); render(); } };
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); if(e.key.toLowerCase()==='r') document.getElementById('showAnswer').click(); });
+render();
+</script>
+<div class="footerLogo"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDMwLjIuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDkuMDMgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkNhcGFfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgdmlld0JveD0iMCAwIDYwMCAyMTAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDYwMCAyMTA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojRkZGRkZGO30KPC9zdHlsZT4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE0OS43LDE0My40VjEwLjdoLTIyLjhsMCwxMzIuOGMwLDAsMCw0LjMtMC4zLDljLTAuNSw3LjItMS41LDE2LjctNy40LDIzLjdjLTQuNSw1LjQtMTEuNSw3LjctMTYuNyw4LjYKCWMtNC45LDAuOS0xNC41LDAuNS0xOC4yLTAuMmMtNS4zLTEtMTEuOS0zLjMtMTYuNi05Yy01LjktNy03LjMtMTcuMi03LjYtMjQuMmMtMC4yLTQuNy0wLjEtOC4xLTAuMS04LjFoMFYxMC43aC0wLjdMMTAsMTAuOHYzLjMKCWMxOS4yLDEuNiwxNi40LDkuNywxNi42LDI0Ljh2MTA0LjNjMCwwLDAuMSw0LjEsMC43LDkuN2MxLjksMTUuMyw5LjMsNDUuOSw2NS43LDQ2LjFjMTguNi0wLjQsMzMuNy00LjIsNDIuMS0xMi44CglDMTQ5LjksMTczLjYsMTQ5LjcsMTQzLjQsMTQ5LjcsMTQzLjQgTTIwOS4zLDEwMi4zbDE4LjYtNTEuNGwxOS4zLDUxLjRIMjA5LjN6IE0yNDEuNywxMC43bC0zOC43LDBWMTRjMTMuMywxLjEsMTUuOCw3LDE0LjQsMTQuNQoJYy0wLjMsMi4xLTIuMyw4LjEtNC42LDE0Yy0yLjgsNy42LTU4LjUsMTU2LjctNTguNSwxNTYuN2gyMS40bDMwLjUtODMuNmg0NS40bDMwLDgzLjZIMzEzTDI0MS43LDEwLjd6IE01NDUuNywxODMuMQoJYy0yMC4xLDAtMjIuNS04LTIyLjUtMjMuNGwtMC41LTU3LjVoNTEuMXYtMC43aDAuMVY5MS4xYzAsMCwwLDAtMC4xLDB2LTQuMmgtNTFsLTAuMSwwbDAtNDQuOGMwLTE0LjMsMS40LTE3LjMsMTctMTcuM2g1MC4yCglsMC4xLTE0LjFINDcyLjNWMTRjMTkuMiwxLjUsMTYuNCw5LjcsMTYuNywyNC45djE2MC4zaDEwMXYtMTYuMUw1NDUuNywxODMuMXogTTQzMC44LDExOS41Yy0wLjUsNC43LTEuMiw5LjktMi4zLDE1CgljLTEuMyw2LTQuOSwxNi45LTcuNSwyMmMtMy45LDcuNS04LDE1LjUtMTcuNiwyMS4xYy05LjksNS44LTE3LjMsOC4zLTMwLjYsOC4zYy00LjEsMC03LjctMC43LTEwLjEtMS41VjI1LjIKCWMyLjQtMC44LDUuNy0xLjEsOS44LTEuMWM1MC41LDAsNTguMywzNy4zLDU5LjEsNzcuNkM0MzEuNywxMDQuOSw0MzEuNiwxMTEuNiw0MzAuOCwxMTkuNSBNNDY1LjIsMTAxLjdjMC03Ny43LTQ1LjYtOTAuNi0xMDMuOC05MQoJbC00OS41LDB2My4zYzE5LjIsMS42LDE2LjQsOS43LDE2LjYsMjQuOHYxMDUuNWgwLjJ2NTQuOWwzMi42LDBjNDcuNi0wLjMsODYuMS05LjEsOTguOC01NC45aDAKCUM0NjMuNiwxMzIuOCw0NjUuMiwxMTguNyw0NjUuMiwxMDEuNyIvPgo8L3N2Zz4K" alt="UADE" /></div>
+</body>
+</html>
